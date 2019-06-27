@@ -12,24 +12,12 @@ pipeline {
                 }
             }
         }
-
-        stage('mapping') {
-            steps {
-                script {
-                    sh """
-                        dir=${env.WORKSPACE}
-                        mappingDir=${env.$JOB_NAME}-mapping
-                        cd ..
-                        cp "$dir"/app/build/outputs/mapping/debug/mapping.txt ./"$mappingDir"/${env.BUILD_NUMBER}-mappging.txt
-                    """
-                }
-            }
-        }
     }
 
     post {
         always {
             echo ' ----post always----'
+            archiveArtifacts artifacts: '**/mapping.txt', onlyIfSuccessful: true
         }
     }
 }
