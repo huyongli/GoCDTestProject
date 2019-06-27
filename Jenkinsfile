@@ -16,10 +16,12 @@ pipeline {
         stage('mapping') {
             steps {
                 script {
-                    dir=$WORKSPACE
-                    mappingDir='${env.$JOB_NAME}-mapping'
-                    cd ..
-                    cp "$dir"/app/build/outputs/mapping/debug/mapping.txt ./"$mappingDir"/"$BUILD_NUMBER"-mappging.txt
+                    sh """
+                        dir=${env.WORKSPACE}
+                        mappingDir=${env.$JOB_NAME}-mapping
+                        cd ..
+                        cp "$dir"/app/build/outputs/mapping/debug/mapping.txt ./"$mappingDir"/${env.BUILD_NUMBER}-mappging.txt
+                    """
                 }
             }
         }
