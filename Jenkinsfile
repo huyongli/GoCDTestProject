@@ -7,7 +7,7 @@ pipeline {
             steps {
                 script{
                     echo '-----build start-----'
-                    sh './gradlew assembleDebug -PbuildNo=${env.BUILD_NUMBER}'
+                    sh "./gradlew assembleDebug -PbuildNo=${env.BUILD_NUMBER}"
                     echo '-----build finish-----'
                 }
             }
