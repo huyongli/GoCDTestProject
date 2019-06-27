@@ -3,6 +3,14 @@ pipeline {
     agent { label  'android'}
 
     stages {
+        stage('Build User') {
+          steps {
+            wrap([$class: 'BuildUser']) {
+              sh 'echo "${BUILD_USER}"'
+              buildName "${BUILD_NUMBER}-${BUILD_USER}"
+            }
+          }
+        }
         stage('Build') {
             steps {
                 script{
