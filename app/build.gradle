@@ -24,15 +24,40 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    def FIELD_BASE_URL = "BASE_URL"
+
+    flavorDimensions "environment"
+    productFlavors {
+        dev {
+            dimension "environment"
+            buildConfigField "String", FIELD_BASE_URL, "\"https://dev.baidu.com\""
+        }
+        qa {
+            dimension "environment"
+            buildConfigField "String", FIELD_BASE_URL, "\"https://qa.baidu.com\""
+        }
+        prod {
+            dimension "environment"
+            buildConfigField "String", FIELD_BASE_URL, "\"https://prod.baidu.com\""
+        }
+    }
 }
 
 afterEvaluate {
-    android.applicationVariants.each { variant ->
+    android.applicationVariants.all { variant ->
+        def buildNo = 'None'
         if (project.hasProperty("buildNo")) {
-            def buildNo = project.property("buildNo")
+            buildNo = project.property("buildNo")
             variant.buildConfigField "String", "BUILD_NO", "\"${buildNo}\""
         } else {
-            variant.buildConfigField "String", "BUILD_NO", "\"\""
+            variant.buildConfigField "String", "BUILD_NO", "\"${buildNo}\""
+        }
+
+        variant.outputs.all {
+            if(outputFileName != null && outputFileName.endsWith('.apk')) {
+                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${buildNo}-v${variant.versionName}.apk"
+            }
         }
     }
 }
