@@ -54,9 +54,14 @@ afterEvaluate {
             variant.buildConfigField "String", "BUILD_NO", "\"${buildNo}\""
         }
 
+        def gitRevision = 'None'
+        if (project.hasProperty("gitRevision")) {
+            buildNo = project.property("gitRevision")
+        }
+
         variant.outputs.all {
             if(outputFileName != null && outputFileName.endsWith('.apk')) {
-                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${buildNo}-v${variant.versionName}.apk"
+                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${buildNo}-${gitRevision}.apk"
             }
         }
     }
