@@ -25,43 +25,73 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     def FIELD_BASE_URL = "BASE_URL"
+    def FIELD_BUILD_NO = "BUILD_NO"
+    def FIELD_GIT_COMMIT_COUNT = "GIT_COMMIT_COUNT"
+    def FIELD_GIT_COMMIT_HASH = "GIT_COMMIT_HASH"
+    def COMMAND_GIT_COMMIT_COUNT = "git rev-list --count HEAD"
+    def COMMAND_GIT_COMMIT_HASH = "git rev-parse --short HEAD"
 
     flavorDimensions "environment"
     productFlavors {
         dev {
             dimension "environment"
             buildConfigField "String", FIELD_BASE_URL, "\"https://dev.baidu.com\""
+            buildConfigField "String", FIELD_BUILD_NO, "\"${getBuildNo()}\""
+            buildConfigField "String", FIELD_GIT_COMMIT_COUNT, "\"${executeGit(COMMAND_GIT_COMMIT_COUNT)}\""
+            buildConfigField "String", FIELD_GIT_COMMIT_HASH, "\"${executeGit(COMMAND_GIT_COMMIT_HASH)}\""
         }
         qa {
             dimension "environment"
             buildConfigField "String", FIELD_BASE_URL, "\"https://qa.baidu.com\""
+            buildConfigField "String", FIELD_BUILD_NO, "\"${getBuildNo()}\""
+            buildConfigField "String", FIELD_GIT_COMMIT_COUNT, "\"${executeGit(COMMAND_GIT_COMMIT_COUNT)}\""
+            buildConfigField "String", FIELD_GIT_COMMIT_HASH, "\"${executeGit(COMMAND_GIT_COMMIT_HASH)}\""
         }
         prod {
             dimension "environment"
             buildConfigField "String", FIELD_BASE_URL, "\"https://prod.baidu.com\""
+            buildConfigField "String", FIELD_BUILD_NO, "\"${getBuildNo()}\""
+            buildConfigField "String", FIELD_GIT_COMMIT_COUNT, "\"${executeGit(COMMAND_GIT_COMMIT_COUNT)}\""
+            buildConfigField "String", FIELD_GIT_COMMIT_HASH, "\"${executeGit(COMMAND_GIT_COMMIT_HASH)}\""
         }
     }
 }
 
+def executeGit(git) {
+    def out = new ByteArrayOutputStream()
+    def command = git.split(" ")
+    println(command)
+    exec {
+        commandLine = command
+        standardOutput = out
+    }
+    return out.toString().trim()
+}
+
+def getBuildNo() {
+    if (project.hasProperty("buildNo")) {
+        return project.property("buildNo")
+    } else {
+        return 'None'
+    }
+}
+
+def getGitHash() {
+    return executeGit("git rev-parse --short HEAD")
+}
+
 afterEvaluate {
     android.applicationVariants.all { variant ->
-        def buildNo = 'None'
-        if (project.hasProperty("buildNo")) {
-            buildNo = project.property("buildNo")
-            variant.buildConfigField "String", "BUILD_NO", "\"${buildNo}\""
-        } else {
-            variant.buildConfigField "String", "BUILD_NO", "\"${buildNo}\""
-        }
-
-        def gitRevision = 'None'
-        if (project.hasProperty("gitRevision")) {
-            buildNo = project.property("gitRevision")
-        }
 
         variant.outputs.all {
             if(outputFileName != null && outputFileName.endsWith('.apk')) {
-                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${buildNo}-${gitRevision}.apk"
+                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${getBuildNo()}-${getGitHash()}.apk"
             }
         }
     }

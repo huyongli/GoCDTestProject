@@ -17,10 +17,7 @@ pipeline {
             steps {
                 script{
                     echo '-----build start-----'
-                    sh """
-                        gitRevision=`git rev-parse --short HEAD`
-                        ./gradlew assemble${params.buildEnv}${params.buildType} -PbuildNo=${env.BUILD_NUMBER} -PgitRevision=gitRevision
-                    """
+                    sh "./gradlew assemble${params.buildEnv}${params.buildType} -PbuildNo=${env.BUILD_NUMBER}"
                     echo '-----build finish-----'
                 }
             }
