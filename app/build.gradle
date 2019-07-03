@@ -41,6 +41,7 @@ android {
     productFlavors {
         dev {
             dimension "environment"
+            applicationIdSuffix '.dev'
             buildConfigField "String", FIELD_BASE_URL, "\"https://dev.baidu.com\""
             buildConfigField "String", FIELD_BUILD_NO, "\"${getBuildNo()}\""
             buildConfigField "String", FIELD_GIT_COMMIT_COUNT, "\"${executeGit(COMMAND_GIT_COMMIT_COUNT)}\""
@@ -48,6 +49,7 @@ android {
         }
         qa {
             dimension "environment"
+            applicationIdSuffix '.qa'
             buildConfigField "String", FIELD_BASE_URL, "\"https://qa.baidu.com\""
             buildConfigField "String", FIELD_BUILD_NO, "\"${getBuildNo()}\""
             buildConfigField "String", FIELD_GIT_COMMIT_COUNT, "\"${executeGit(COMMAND_GIT_COMMIT_COUNT)}\""
@@ -91,7 +93,8 @@ afterEvaluate {
 
         variant.outputs.all {
             if(outputFileName != null && outputFileName.endsWith('.apk')) {
-                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${getBuildNo()}-${getGitHash()}.apk"
+//                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${getBuildNo()}-${getGitHash()}.apk"
+                outputFileName = "app-${variant.flavorName}-${variant.buildType.name}-n${getBuildNo()}.apk"
             }
         }
     }
