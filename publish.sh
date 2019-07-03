@@ -24,8 +24,8 @@ echo '✈ -------------------------------------------- ✈'
 echo 'Uploading to fir...'
 response=$(curl -F "key=${KEY}" \
 -F "token=${TOKEN}" \
--F "file=@${PACKAGE_PATH}" \
--F "x:build=1" \
+-F "file=@${APK_PATH}" \
+-F "x:build=${BUILD_ID}" \
 ${UPLOAD_URL}
 )
 echo $response;

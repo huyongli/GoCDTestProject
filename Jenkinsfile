@@ -26,33 +26,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        echo '✈ -------------------------------------------- ✈'
-                        apkName="app-${params.buildEnv.toLowerCase()}-${params.buildType.toLowerCase()}-n${env.BUILD_NUMBER}.apk"
-                        apkPath="./app/build/outputs/apk/${params.buildEnv.toLowerCase()}/${params.buildType.toLowerCase()}/${apkName}"
-                        appId="com.laohu.gocdtestproject.${params.buildType.toLowerCase()}"
-                        appName="GoCd ${params.buildType.toUpperCase()}"
-
-                        echo '✈ -------------------------------------------- ✈'
-                        echo 'Get fir credential...'
-                        credential=\$(curl -X "POST" "http://api.fir.im/apps" \
-                                    -H "Content-Type: application/json" \
-                                    -d "{\"type\":\"android\", \"bundle_id\":\"${appId}\", \"api_token\":\"${env.FIR_API_TOKEN}\"}" \
-                                    2>/dev/null)
-                                    binary_response=\$(echo ${credential} | grep -o "binary[^}]*")
-                                    KEY=\$(echo ${binary_response} | awk -F '"' '{print \$5}')
-                                    TOKEN=\$(echo ${binary_response} | awk -F '"' '{print \$9}')
-                                    UPLOAD_URL=\$(echo ${binary_response} | awk -F '"' '{print \$13}')
-
-                        echo '✈ -------------------------------------------- ✈'
-                        echo 'Uploading to fir...'
-                        response=\$(curl -F "key=${KEY}" \
-                        -F "token=${TOKEN}" \
-                        -F "file=@${apkPath}" \
-                        -F "x:build=${env.BUILD_DISPLAY_NAME}" \
-                        -F "x:name=${appName}" \
-                        ${UPLOAD_URL}
-                        )
-                        echo $response;
+                        sh ./publish.sh ${env.FIR_API_TOKEN} com.laohu.gocdtestproject.${params.buildType.toLowerCase()} ./app/build/outputs/apk/${params.buildEnv.toLowerCase()}/${params.buildType.toLowerCase()}/app-${params.buildEnv.toLowerCase()}-${params.buildType.toLowerCase()}-n${env.BUILD_NUMBER}.apk GoCd ${params.buildType.toUpperCase()} ${env.BUILD_DISPLAY_NAME}
                     """
                 }
             }
